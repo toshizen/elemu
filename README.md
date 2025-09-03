@@ -105,6 +105,56 @@ Date | Version  | Description
 |0xCE  |力測積算無効電力量（遅れ）計測値履歴|0xE1で指定した履歴値
 |0xE7  |積算有効電力量計測値履歴|0xE1で指定した履歴値
 
+## EPC値のファイル設定方法
+
+### 設定ファイル概要
+
+- **初期値設定**: `conf/initValues.json` - 機器起動時の初期値定義
+- **状態永続化**: `data/state_*.json` - 機器の現在状態保存
+- **プロパティ設定**: `conf/eojSettings.json` - アクセス権限・応答時間設定
+
+### ファイル形式
+
+**初期値設定** (`conf/initValues.json`):
+```json
+{
+  "common": {
+    "initValues": {
+      "0x80": ["0x30"],
+      "0x82": ["0x00004200"]
+    }
+  },
+  "devices": [
+    {
+      "eoj": "0x0130", 
+      "initValues": {
+        "0xA0": ["0x41"]
+      }
+    }
+  ]
+}
+```
+
+**状態ファイル** (`data/state_013001.json`):
+```json
+{
+  "80": "30",
+  "A0": "41"
+}
+```
+
+### 設定適用順序
+
+1. 状態ファイル値（実行時）
+2. 初期値設定（起動時）
+3. デフォルト値（MRAデータ）
+
+### 関連処理
+
+- 初期値読込: `lib/InitValues.js:26`
+- 状態管理: `lib/DeviceState.js`
+- ファイル操作: `DeviceState._readStateFileSync()`, `DeviceState._writeStateFile()`
+
 ## FAQ
 
 Q:コンソール画面に以下のエラーが表示されます。  
